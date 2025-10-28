@@ -1,0 +1,74 @@
+[
+  {
+    "id": "txn_001",
+    "transactionId": "TXN-2025-10-001",
+    "accountId": "acc_001",
+    "type": "debit",
+    "amount": 45.99,
+    "merchant": "Amazon.com",
+    "category": "Shopping",
+    "date": "2025-10-25T14:30:00Z",
+    "status": "completed",
+    "description": "Online purchase"
+  },
+  {
+    "id": "txn_002",
+    "transactionId": "TXN-2025-10-002",
+    "accountId": "acc_001",
+    "type": "debit",
+    "amount": 125.50,
+    "merchant": "Whole Foods Market",
+    "category": "Groceries",
+    "date": "2025-10-24T18:45:00Z",
+    "status": "completed",
+    "description": "Grocery shopping"
+  },
+  {
+    "id": "txn_003",
+    "transactionId": "TXN-2025-10-003",
+    "accountId": "acc_002",
+    "type": "credit",
+    "amount": 1500.00,
+    "merchant": "Salary Deposit",
+    "category": "Income",
+    "date": "2025-10-24T00:00:00Z",
+    "status": "completed",
+    "description": "Monthly salary"
+  },
+  {
+    "id": "txn_004",
+    "transactionId": "TXN-2025-10-004",
+    "accountId": "acc_003",
+    "type": "debit",
+    "amount": 89.99,
+    "merchant": "Netflix",
+    "category": "Entertainment",
+    "date": "2025-10-23T12:00:00Z",
+    "status": "completed",
+    "description": "Monthly subscription"
+  },
+  {
+    "id": "txn_005",
+    "transactionId": "TXN-2025-10-005",
+    "accountId": "acc_001",
+    "type": "debit",
+    "amount": 3500.00,
+    "merchant": "City Rent Property",
+    "category": "Housing",
+    "date": "2025-10-01T09:00:00Z",
+    "status": "completed",
+    "description": "Monthly rent payment"
+  },
+  {
+    "id": "txn_006",
+    "transactionId": "TXN-2025-10-006",
+    "accountId": "acc_005",
+    "type": "credit",
+    "amount": 8750.00,
+    "merchant": "Client Payment - ABC Corp",
+    "category": "Business Income",
+    "date": "2025-10-22T14:30:00Z",
+    "status": "completed",
+    "description": "Invoice #INV-2025-123"
+  }
+]

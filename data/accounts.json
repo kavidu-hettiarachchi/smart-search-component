@@ -1,0 +1,53 @@
+[
+  {
+    "id": "acc_001",
+    "accountNumber": "****1234",
+    "type": "checking",
+    "title": "Premier Checking Account",
+    "balance": 5234.56,
+    "currency": "USD",
+    "status": "active",
+    "lastTransaction": "2025-10-25T14:30:00Z"
+  },
+  {
+    "id": "acc_002",
+    "accountNumber": "****5678",
+    "type": "savings",
+    "title": "High-Yield Savings Account",
+    "balance": 12890.00,
+    "currency": "USD",
+    "status": "active",
+    "lastTransaction": "2025-10-24T10:15:00Z"
+  },
+  {
+    "id": "acc_003",
+    "accountNumber": "****9012",
+    "type": "credit",
+    "title": "Platinum Credit Card",
+    "balance": -1450.75,
+    "creditLimit": 10000,
+    "currency": "USD",
+    "status": "active",
+    "lastTransaction": "2025-10-26T08:45:00Z"
+  },
+  {
+    "id": "acc_004",
+    "accountNumber": "****3456",
+    "type": "investment",
+    "title": "Retirement Investment Account",
+    "balance": 45600.25,
+    "currency": "USD",
+    "status": "active",
+    "lastTransaction": "2025-10-23T16:20:00Z"
+  },
+  {
+    "id": "acc_005",
+    "accountNumber": "****7890",
+    "type": "business",
+    "title": "Business Checking Account",
+    "balance": 23450.00,
+    "currency": "USD",
+    "status": "active",
+    "lastTransaction": "2025-10-26T09:30:00Z"
+  }
+]

@@ -1,0 +1,62 @@
+[
+  {
+    "id": "cust_001",
+    "customerId": "CUST-10001",
+    "firstName": "John",
+    "lastName": "Smith",
+    "email": "john.smith@example.com",
+    "phone": "+1-555-0123",
+    "accountType": "Premier",
+    "joinDate": "2020-03-15",
+    "status": "active",
+    "totalAccounts": 3
+  },
+  {
+    "id": "cust_002",
+    "customerId": "CUST-10002",
+    "firstName": "Sarah",
+    "lastName": "Johnson",
+    "email": "sarah.j@example.com",
+    "phone": "+1-555-0456",
+    "accountType": "Standard",
+    "joinDate": "2021-07-22",
+    "status": "active",
+    "totalAccounts": 2
+  },
+  {
+    "id": "cust_003",
+    "customerId": "CUST-10003",
+    "firstName": "Michael",
+    "lastName": "Chen",
+    "email": "m.chen@example.com",
+    "phone": "+1-555-0789",
+    "accountType": "Business",
+    "joinDate": "2019-11-08",
+    "status": "active",
+    "totalAccounts": 5
+  },
+  {
+    "id": "cust_004",
+    "customerId": "CUST-10004",
+    "firstName": "Emily",
+    "lastName": "Rodriguez",
+    "email": "emily.r@example.com",
+    "phone": "+1-555-0321",
+    "accountType": "Premier",
+    "joinDate": "2022-01-30",
+    "status": "active",
+    "totalAccounts": 4
+  },
+  {
+    "id": "cust_005",
+    "customerId": "CUST-10005",
+    "firstName": "David",
+    "lastName": "Williams",
+    "email": "d.williams@example.com",
+    "phone": "+1-555-0654",
+    "accountType": "Standard",
+    "joinDate": "2023-05-12",
+    "status": "active",
+    "totalAccounts": 1
+  }
+]
