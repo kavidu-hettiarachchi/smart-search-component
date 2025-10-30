@@ -737,10 +737,40 @@ describe('SmartSearchComponent', () => {
             global.fetch = originalFetch;
         });
 
-        test('should load all three data sources', () => {
-            const mockFetch = jest.fn().mockResolvedValue({
-                json: () => Promise.resolve([])
-            });
+        test('should load all three data sources', async () => {
+            const mockFetch = jest.fn()
+                .mockImplementation((url) => {
+                    // Handle CSS file loading
+                    if (url.includes('.css')) {
+                        return Promise.resolve({
+                            ok: true,
+                            text: () => Promise.resolve('/* mock css */')
+                        });
+                    }
+                    
+                    // Handle primary data endpoint - make it fail
+                    if (url === './data') {
+                        return Promise.resolve({
+                            ok: false,
+                            status: 404,
+                            statusText: 'Not Found'
+                        });
+                    }
+                    
+                    // Handle individual JSON files - make them succeed
+                    if (url.includes('.json')) {
+                        return Promise.resolve({
+                            ok: true,
+                            json: () => Promise.resolve([])
+                        });
+                    }
+                    
+                    // Default fallback
+                    return Promise.resolve({
+                        ok: true,
+                        json: () => Promise.resolve([])
+                    });
+                });
 
             // Reset the global fetch mock call count
             (global.fetch as jest.Mock).mockClear();
@@ -750,10 +780,19 @@ describe('SmartSearchComponent', () => {
             const newComponent = new SmartSearchComponent();
             document.body.appendChild(newComponent);
 
-            // Verify all three endpoints were called (may be called multiple times due to component lifecycle)
-            expect(mockFetch).toHaveBeenCalledWith('../data/accounts.json');
-            expect(mockFetch).toHaveBeenCalledWith('../data/customers.json');
-            expect(mockFetch).toHaveBeenCalledWith('../data/transactions.json');
+            // Wait for data loading to complete (including fallback)
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            // Verify primary endpoint was called first
+            expect(mockFetch).toHaveBeenCalledWith('./data', expect.any(Object));
+            
+            // Verify all three individual endpoints were called as fallback
+            expect(mockFetch).toHaveBeenCalledWith('../data/accounts.json', expect.any(Object));
+            expect(mockFetch).toHaveBeenCalledWith('../data/customers.json', expect.any(Object));
+            expect(mockFetch).toHaveBeenCalledWith('../data/transactions.json', expect.any(Object));
+
+            // Should have made at least 4 calls: CSS + primary + 3 fallback
+            expect(mockFetch.mock.calls.length).toBeGreaterThanOrEqual(4);
 
             document.body.removeChild(newComponent);
         });
@@ -898,6 +937,9 @@ describe('SmartSearchComponent', () => {
                 input.dispatchEvent(new Event('input'));
             }
 
+            // Wait for debounce and dropdown to close
+            await new Promise(resolve => setTimeout(resolve, 400));
+
             // Should be false again
             expect(input?.getAttribute('aria-expanded')).toBe('false');
         });
@@ -1030,7 +1072,7 @@ describe('SmartSearchComponent', () => {
 
             // Verify dropdown is closed
             const dropdown = component.shadowRoot?.querySelector('.dropdown');
-            expect(dropdown?.classList.contains('open')).toBeTruthy();
+            expect(dropdown?.classList.contains('open')).toBeFalsy();
         });
 
         test('should handle no results', async () => {

@@ -1,8 +1,29 @@
+/**
+ * Smart Search Component - Consolidated Styles
+ *
+ * Sections:
+ * CSS Custom Properties & Host Styles
+ * Base Styles & Reset
+ * Search Container & Input Styles
+ * Dropdown & Navigation Styles
+ * Results & Content Styles
+ * Virtual Scrolling Styles
+ * Demo Functionality Styles
+ * Accessibility Styles
+ * Responsive & Media Queries
+ * Animations & Keyframes
+ */
+
+/*
+CSS Custom Properties & Host Styles
+*/
+
 :host {
     --primary-color: #2563eb;
     --primary-hover: #1d4ed8;
     --background: #ffffff;
     --surface: #f9fafb;
+    --selected-bg: #e3f2fd;
     --border: #e5e7eb;
     --text-primary: #111827;
     --text-secondary: #6b7280;
@@ -11,27 +32,46 @@
     --success: #10b981;
     --warning: #f59e0b;
     --error: #ef4444;
+    --transition-duration: 0.3s;
+    --transition-timing: ease;
 
     display: block;
     position: relative;
     width: 100%;
     max-width: 600px;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    transition: all var(--transition-duration) var(--transition-timing);
 }
 
 :host([theme="dark"]) {
+    --primary-color: #60a5fa;
+    --primary-hover: #3b82f6;
     --background: #1f2937;
     --surface: #111827;
-    --border: #374151;
+    --selected-bg: #374151;
+    --border: #4b5563;
     --text-primary: #f9fafb;
-    --text-secondary: #9ca3af;
+    --text-secondary: #d1d5db;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+    --success: #34d399;
+    --warning: #fbbf24;
+    --error: #f87171;
 }
+
+/*
+Base Styles & Reset
+*/
 
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
+
+/*
+Search Container & Input Styles
+*/
 
 .search-container {
     position: relative;
@@ -45,12 +85,63 @@
     background: var(--background);
     border: 2px solid var(--border);
     border-radius: 12px;
-    transition: all 0.2s ease;
+    transition: all var(--transition-duration) var(--transition-timing);
 }
 
 .search-wrapper:focus-within {
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Font Awesome Icon Support */
+.fas, .far, .fab, .fal, .fad, .fa-solid, .fa-regular, .fa-brands, .fa-light, .fa-duotone {
+    font-family: "Font Awesome 6 Free", "Font Awesome 6 Pro", "Font Awesome 5 Free", "Font Awesome 5 Pro", sans-serif;
+    font-weight: 900;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.far, .fa-regular {
+    font-weight: 400;
+}
+
+.fab, .fa-brands {
+    font-weight: 400;
+}
+
+/* Icon fallbacks when Font Awesome fails to load */
+.search-icon::before {
+    content: "\f002";
+}
+
+.fas.fa-search::before,
+.fa-solid.fa-magnifying-glass::before {
+    content: "\f002";
+}
+
+.fas.fa-xmark::before,
+.fa-solid.fa-xmark::before {
+    content: "\f00d";
+}
+
+.fas.fa-university::before {
+    content: "\f19c";
+}
+
+.fas.fa-user::before {
+    content: "\f007";
+}
+
+.fas.fa-exchange-alt::before {
+    content: "\f362";
+}
+
+.fas.fa-th::before {
+    content: "\f00a";
 }
 
 .search-icon {
@@ -69,6 +160,7 @@
     background: transparent;
     border: none;
     outline: none;
+    transition: color var(--transition-duration) var(--transition-timing);
 }
 
 .search-input::placeholder {
@@ -89,7 +181,7 @@
     color: var(--text-secondary);
     cursor: pointer;
     opacity: 0;
-    transition: all 0.2s ease;
+    transition: all var(--transition-duration) var(--transition-timing);
     font-size: 14px;
 }
 
@@ -101,6 +193,10 @@
     background: var(--border);
     color: var(--text-primary);
 }
+
+/*
+Dropdown & Navigation Styles
+*/
 
 .dropdown {
     position: absolute;
@@ -115,7 +211,7 @@
     opacity: 0;
     transform: translateY(-10px);
     pointer-events: none;
-    transition: all 0.2s ease;
+    transition: all var(--transition-duration) var(--transition-timing);
     overflow: hidden;
 }
 
@@ -142,7 +238,7 @@
     border: none;
     border-bottom: 2px solid transparent;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-duration) var(--transition-timing);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -163,6 +259,10 @@
 .tab-icon {
     font-size: 14px;
 }
+
+/*
+Results & Content Styles
+*/
 
 .results-container {
     max-height: 350px;
@@ -381,6 +481,7 @@
 
 .selected-result-content {
     flex: 1;
+    text-align: left !important;
 }
 
 .selected-result-type {

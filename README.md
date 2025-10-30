@@ -9,8 +9,8 @@ A reusable, accessible, and highly configurable search component built with Type
 
 ## 📚 Documentation
 
-- **[Quick Setup Guide](./QUICK_SETUP.md)** - Installation, prerequisites, and step-by-step setup
-- **[Technical Justification](./TECHNICAL_JUSTIFICATION.md)** - Architecture decisions and web standards compliance
+- **[Quick Setup Guide](./QUICK_SETUP.md)** - Installation, configuration, and step-by-step setup
+- **[Technical Documentation](./TECHNICAL_JUSTIFICATION.md)** - Architecture decisions and implementation details
 
 ---
 
@@ -35,7 +35,7 @@ A reusable, accessible, and highly configurable search component built with Type
 - **Shadow DOM**: Complete style isolation
 - **Framework-Agnostic**: Works with React, Vue, Angular, vanilla JS
 - **Configurable**: Multiple configuration options via attributes
-- **Tested**: Comprehensive test suite with Jest
+- **Tested**: Comprehensive test suite with 86 tests
 - **Modern Standards**: Built with ES2020+ and Web Components v1
 
 ---
@@ -89,17 +89,50 @@ For complete installation instructions, prerequisites, and step-by-step setup gu
 
 ---
 
-## 🎨 Configuration
+## ⚙️ Configuration
 
-For detailed configuration options including environment variables, component attributes, and CSS custom properties, see **[QUICK_SETUP.md](./QUICK_SETUP.md#configuration-options)**.
+### Component Attributes
+
+| Attribute | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `placeholder` | string | "Search..." | Input placeholder text |
+| `min-search-length` | number | 1 | Minimum characters to trigger search |
+| `debounce-delay` | number | 300 | Debounce delay in milliseconds |
+| `max-results` | number | 10 | Maximum results to display |
+| `data-endpoint` | string | "./data/" | Data source endpoint |
+| `theme` | string | "light" | Theme: "light" or "dark" |
+
+### CSS Custom Properties
+
+```css
+smart-search {
+  --primary-color: #2563eb;
+  --background: #ffffff;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --border-color: #d1d5db;
+  --border-radius: 8px;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --font-size: 14px;
+  --spacing: 12px;
+}
+
+/* Dark theme */
+smart-search[theme="dark"] {
+  --background: #1f2937;
+  --text-primary: #f9fafb;
+  --text-secondary: #d1d5db;
+  --border-color: #374151;
+}
+```
 
 ---
 
 ## 📡 Events
 
-The component emits custom events that bubble through the Shadow DOM:
+The component emits custom events for integration with your application:
 
-### Available Events
+### Event Types
 
 ```javascript
 const searchComponent = document.querySelector('smart-search');
@@ -131,12 +164,11 @@ searchComponent.addEventListener('tab-changed', (e) => {
   console.log('Tab changed to:', e.detail.activeTab);
 });
 
-// Dropdown opened
+// Dropdown state changes
 searchComponent.addEventListener('dropdown-opened', () => {
   console.log('Dropdown opened');
 });
 
-// Dropdown closed
 searchComponent.addEventListener('dropdown-closed', () => {
   console.log('Dropdown closed');
 });
@@ -156,11 +188,11 @@ searchComponent.addEventListener('theme-changed', (e) => {
 
 ## 🗂️ Data Structure
 
-### Required Data Format
+### Expected Data Format
 
-The component expects three JSON files in your data endpoint:
+The component expects three JSON files at your data endpoint:
 
-#### 1. `accounts.json`
+#### accounts.json
 ```json
 [
   {
@@ -174,7 +206,7 @@ The component expects three JSON files in your data endpoint:
 ]
 ```
 
-#### 2. `customers.json`
+#### customers.json
 ```json
 [
   {
@@ -189,7 +221,7 @@ The component expects three JSON files in your data endpoint:
 ]
 ```
 
-#### 3. `transactions.json`
+#### transactions.json
 ```json
 [
   {
@@ -231,13 +263,7 @@ interface ComponentConfig {
 
 ---
 
-## 🎨 Theming
-
-For complete theming information including CSS custom properties and theme switching, see **[QUICK_SETUP.md](./QUICK_SETUP.md#customization-quick-start)**.
-
----
-
-## ⌨️ Keyboard Shortcuts
+## ⌨️ Keyboard Navigation
 
 | Key | Action |
 |-----|--------|
@@ -264,40 +290,17 @@ The component is built with accessibility as a first-class concern:
 - ✅ `aria-activedescendant` for keyboard navigation
 - ✅ `aria-label` for screen reader context
 
-### Keyboard Support
-- ✅ Full keyboard navigation
-- ✅ Focus management
-- ✅ Focus trap prevention
-- ✅ Screen reader announcements
-
 ### WCAG 2.1 Compliance
-- ✅ Level AA contrast ratios
-- ✅ Focus indicators
-- ✅ Logical tab order
-- ✅ Semantic HTML
+- ✅ Level AA contrast ratios (4.5:1 minimum)
+- ✅ Focus indicators with visible outlines
+- ✅ Logical tab order and focus management
+- ✅ Semantic HTML structure
+- ✅ Screen reader announcements
+- ✅ Keyboard-only navigation support
 
 ---
 
-## 🏗️ Development
-
-For detailed development setup, build commands, and project structure information, see **[QUICK_SETUP.md](./QUICK_SETUP.md#development-workflow)**.
-
-For technical architecture and technology decisions, see **[TECHNICAL_JUSTIFICATION.md](./TECHNICAL_JUSTIFICATION.md)**.
-
----
-
-## 🧪 Testing
-
-For complete testing information, test commands, and coverage details, see **[QUICK_SETUP.md](./QUICK_SETUP.md#run-tests)**.
-
----
-
-## 🌐 Browser Support
-
-For detailed browser compatibility information and Web Components feature requirements, see **[TECHNICAL_JUSTIFICATION.md](./TECHNICAL_JUSTIFICATION.md#version-compatibility-matrix)**.
-
----
-## 🔧 Framework Integration
+## 🌐 Framework Integration
 
 ### React
 
@@ -372,15 +375,40 @@ export class AppModule { }
 
 ---
 
-## 🐛 Troubleshooting
+## 🌐 Browser Support
 
-For troubleshooting guides, common issues, and performance tips, see **[QUICK_SETUP.md](./QUICK_SETUP.md#troubleshooting)**.
+| Browser | Minimum Version | Notes |
+|---------|----------------|-------|
+| Chrome | 90+ | Full Web Components support |
+| Firefox | 123+ | Declarative Shadow DOM support |
+| Safari | 16.4+ | Custom Elements v1 support |
+| Edge | 90+ | Chromium-based, full support |
 
 ---
 
-### Development Environment
+## 🧪 Testing
 
-For complete development environment setup and requirements, see **[QUICK_SETUP.md](./QUICK_SETUP.md#prerequisites)** and **[TECHNICAL_JUSTIFICATION.md](./TECHNICAL_JUSTIFICATION.md#version-compatibility-matrix)**.
+The component includes comprehensive test coverage:
+
+- **86 total tests** across component and utility functions
+- **Component Tests**: Configuration, theming, keyboard navigation, search functionality
+- **Utility Tests**: Validation, async operations, component utilities
+- **Integration Tests**: Event handling, DOM manipulation, lifecycle management
+
+Run tests with:
+```bash
+npm test
+```
+
+---
+
+## 🚀 Getting Started
+
+1. **Installation**: See [QUICK_SETUP.md](./QUICK_SETUP.md) for detailed setup instructions
+2. **Configuration**: Customize attributes and CSS custom properties
+3. **Integration**: Add event listeners for your application logic
+4. **Theming**: Modify CSS variables or use built-in themes
+5. **Testing**: Run the test suite to verify functionality
 
 ---
 
@@ -390,6 +418,13 @@ For complete development environment setup and requirements, see **[QUICK_SETUP.
 - [Web Components Specification](https://www.webcomponents.org/)
 - [Jest Testing Framework](https://jestjs.io/)
 - [GitHub](https://github.com)
+
+---
+
+## 📖 Documentation
+
+- **[Quick Setup Guide](./QUICK_SETUP.md)** - Installation, configuration, and examples
+- **[Technical Documentation](./TECHNICAL_JUSTIFICATION.md)** - Architecture, standards compliance, and implementation details
 
 ---
 

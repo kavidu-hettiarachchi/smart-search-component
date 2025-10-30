@@ -208,6 +208,10 @@ smart-search {
     overflow-x: auto;
 }
 
+.selected-result-content  {
+ text-align: left !important;
+}
+
 .no-selection {
     text-align: center;
     padding: 40px 20px;

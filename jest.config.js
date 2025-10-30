@@ -8,7 +8,17 @@ module.exports = {
     ],
     transform: {
         '^.+\.ts$': ['ts-jest', {
-            useESM: true
+            tsconfig: {
+                target: 'ES2020',
+                module: 'CommonJS',
+                lib: ['ES2020', 'DOM', 'DOM.Iterable'],
+                moduleResolution: 'node',
+                esModuleInterop: true,
+                allowSyntheticDefaultImports: true,
+                skipLibCheck: true,
+                jsx: 'react'
+            },
+            useESM: false
         }]
     },
     moduleFileExtensions: ['ts', 'js', 'json'],
@@ -16,5 +26,11 @@ module.exports = {
         'src/**/*.ts',
         '!src/**/*.d.ts'
     ],
-    testTimeout: 10000
+    testTimeout: 10000,
+    moduleNameMapper: {
+        '^@/(.*)$': '<rootDir>/src/$1',
+        '^(\\.{1,2}/.*)\\.(js|ts)$': '$1'
+    },
+    extensionsToTreatAsEsm: [],
+    setupFilesAfterEnv: ['<rootDir>/tests/setup.ts']
 };

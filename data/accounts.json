@@ -49,5 +49,16 @@
     "currency": "USD",
     "status": "active",
     "lastTransaction": "2025-10-26T09:30:00Z"
+  },
+  {
+    "id": "acc_006",
+    "accountNumber": "****7014",
+    "type": "credit",
+    "title": "Platinum Credit Card - 2",
+    "balance": -200.00,
+    "creditLimit": 20000,
+    "currency": "USD",
+    "status": "active",
+    "lastTransaction": "2025-10-27T08:45:00Z"
   }
 ]
