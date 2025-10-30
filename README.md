@@ -38,6 +38,15 @@ A reusable, accessible, and highly configurable search component built with Type
 - **Tested**: Comprehensive test suite with 86 tests
 - **Modern Standards**: Built with ES2020+ and Web Components v1
 
+### Demo Images
+
+![enter image description here](https://kavidu.com/dev/1.png)
+![enter image description here](https://kavidu.com/dev/2.png)
+![enter image description here](https://kavidu.com/dev/3.png)
+![enter image description here](https://kavidu.com/dev/4.png)
+![enter image description here](https://kavidu.com/dev/5.png)
+![enter image description here](https://kavidu.com/dev/6.png)
+
 ---
 
 ## 📦 Installation
@@ -412,13 +421,23 @@ npm test
 
 ---
 
-### Development Tools and Services
+### Development for Used Services
 
 - [TypeScript Documentation](https://www.typescriptlang.org/docs/)
 - [Web Components Specification](https://www.webcomponents.org/)
 - [Jest Testing Framework](https://jestjs.io/)
 - [GitHub](https://github.com)
+- [Jsoncrack](https://jsoncrack.com/)
+- [Stackedit](https://stackedit.io/)
 
+### Tools Used for the Development
+
+- macOS
+- iTerm2
+- Trae
+- WebStorm
+- Google Chrome
+- git
 ---
 
 ## 📖 Documentation
