@@ -7,7 +7,7 @@
  * @version 1.0.0
  */
 
-import {logWarn, logError} from '../utils/logger.js';
+import {logWarn, logError, logDebug} from '../utils/logger.js';
 import {
     validateConfig,
     escapeHtml,
@@ -227,6 +227,7 @@ class SmartSearchComponent extends HTMLElement {
     private activeTab: SearchTab = 'all';
     private isOpen: boolean = false;
     private searchDebouncer: ((query: string) => void) | null = null;
+    private debounceTimeoutId: number | undefined;
 
     // Theme management
     private currentTheme: Theme = DEFAULT_THEME;
@@ -320,7 +321,7 @@ class SmartSearchComponent extends HTMLElement {
                 configUpdate.dataEndpoint = newValue;
                 break;
             case 'theme':
-                this.updateTheme(newValue as Theme);
+                this.setTheme(newValue as Theme, true);
                 return;
         }
 
@@ -329,6 +330,7 @@ class SmartSearchComponent extends HTMLElement {
 
     // Cleans up resources when component is destroyed
     private cleanup(): void {
+        clearTimeout(this.debounceTimeoutId);
         this.removeEventListeners();
         this.cleanupThemeButton();
     }
@@ -351,8 +353,7 @@ class SmartSearchComponent extends HTMLElement {
                 throw ErrorFactory.createNetworkError('Data fetch', response.status, response.statusText);
             }
 
-            const data = await response.json();
-            this.searchData = data;
+            this.searchData = this.normalizeSearchData(await response.json());
 
             this.dispatchCustomEvent(EVENTS.DATA_LOADED, {success: true});
 
@@ -365,6 +366,19 @@ class SmartSearchComponent extends HTMLElement {
                 this.dispatchCustomEvent(EVENTS.DATA_LOAD_ERROR, {error: fallbackError});
             }
         }
+    }
+
+    // Validates the shape of loaded data so malformed payloads cannot crash searching
+    private normalizeSearchData(data: unknown): SearchData {
+        const source = (data && typeof data === 'object' ? data : {}) as Record<string, unknown>;
+        const list = <T>(value: unknown): T[] =>
+            Array.isArray(value) ? value.filter(item => item && typeof item === 'object') as T[] : [];
+
+        return {
+            accounts: list<AccountData>(source.accounts),
+            customers: list<CustomerData>(source.customers),
+            transactions: list<TransactionData>(source.transactions)
+        };
     }
 
     // Fallback data loading method
@@ -391,11 +405,7 @@ class SmartSearchComponent extends HTMLElement {
                 transactionsRes.json()
             ]);
 
-            this.searchData = {
-                accounts,
-                customers,
-                transactions
-            };
+            this.searchData = this.normalizeSearchData({accounts, customers, transactions});
 
             this.dispatchCustomEvent(EVENTS.DATA_LOADED, {success: true});
 
@@ -423,7 +433,8 @@ class SmartSearchComponent extends HTMLElement {
 
         // Global keyboard events - capture on shadow root to handle all keyboard navigation
         this.shadowKeyboardHandler = (event: Event) => {
-            if (event instanceof KeyboardEvent) {
+            // Events from the input are already handled by its own listener
+            if (event instanceof KeyboardEvent && event.composedPath()[0] !== this.searchInput) {
                 this.boundHandlers.keydown(event);
             }
         };
@@ -598,7 +609,7 @@ class SmartSearchComponent extends HTMLElement {
 
     // Announces status changes to screen readers
     private announceToScreenReader(message: string): void {
-        const statusElement = this.shadow.querySelector('.search-status') as HTMLElement;
+        const statusElement = this.shadow.querySelector('#search-status') as HTMLElement;
         if (statusElement) {
             statusElement.textContent = message;
             // Clear the message after a short delay to allow for repeated announcements
@@ -813,6 +824,8 @@ class SmartSearchComponent extends HTMLElement {
             fontAwesomeLink.rel = 'stylesheet';
             fontAwesomeLink.href = SHARED_CONSTANTS.CDN_URLS.FONT_AWESOME;
             fontAwesomeLink.crossOrigin = 'anonymous';
+            fontAwesomeLink.referrerPolicy = 'no-referrer';
+            fontAwesomeLink.integrity = SHARED_CONSTANTS.CDN_URLS.FONT_AWESOME_SRI;
             // Preload for better performance
             fontAwesomeLink.setAttribute('rel', 'preload');
             fontAwesomeLink.setAttribute('as', 'style');
@@ -857,21 +870,20 @@ class SmartSearchComponent extends HTMLElement {
 
     // Renders the component HTML structure
     private renderHTML(): void {
-        this.shadow.innerHTML += `
+        const template = document.createElement('template');
+        template.innerHTML = `
             <div class="${CSS_CLASSES.SEARCH_CONTAINER}" role="search">
                 <div class="${CSS_CLASSES.SEARCH_WRAPPER}">
                     <i class="${CSS_CLASSES.SEARCH_ICON} fas fa-search" aria-hidden="true"></i>
                     <input
                         type="text"
                         class="${CSS_CLASSES.SEARCH_INPUT}"
-                        placeholder="${this.config.placeholder}"
-                        role="combobox"
+                                                role="combobox"
                         aria-label="Search banking data"
                         aria-autocomplete="list"
                         aria-expanded="false"
                         aria-controls="search-results"
                         aria-haspopup="listbox"
-                        aria-describedby="search-instructions"
                     />
                     <button class="${CSS_CLASSES.CLEAR_BUTTON}" aria-label="Clear search" type="button">
                         <i class="fa-solid fa-xmark" aria-hidden="true"></i>
@@ -884,11 +896,14 @@ class SmartSearchComponent extends HTMLElement {
                         <ul class="${CSS_CLASSES.RESULTS_LIST}"></ul>
                     </div>
                 </div>
-                                
+
                 <!-- Live region for search status announcements -->
                 <div id="search-status" class="sr-only" aria-live="polite" aria-atomic="true"></div>
             </div>
         `;
+        const input = template.content.querySelector(`.${CSS_CLASSES.SEARCH_INPUT}`) as HTMLInputElement | null;
+        if (input) input.placeholder = this.config.placeholder;
+        this.shadow.appendChild(template.content);
     }
 
     // Renders the filter tabs
@@ -990,10 +1005,9 @@ class SmartSearchComponent extends HTMLElement {
     private performDebouncedSearch(query: string): void {
         // Initialize debouncer if not already created
         if (!this.searchDebouncer) {
-            let timeoutId: number;
             this.searchDebouncer = (searchQuery: string) => {
-                clearTimeout(timeoutId);
-                timeoutId = window.setTimeout(() => {
+                clearTimeout(this.debounceTimeoutId);
+                this.debounceTimeoutId = window.setTimeout(() => {
                     this.performSearch(searchQuery);
                 }, this.config.debounceDelay);
             };
@@ -1624,7 +1638,7 @@ class SmartSearchComponent extends HTMLElement {
             this.storeTheme(theme);
 
             // Log theme change for debugging
-            logWarn(`Theme changed from ${previousTheme} to ${theme}`, 'SmartSearchComponent.setTheme');
+            logDebug(`Theme changed from ${previousTheme} to ${theme}`, 'SmartSearchComponent.setTheme');
         } catch (error) {
             logError('Failed to set theme', 'SmartSearchComponent.setTheme', error as Error);
             // Fallback to default theme on error

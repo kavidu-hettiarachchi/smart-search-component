@@ -40,17 +40,25 @@ export function validateConfig(config: Partial<ComponentConfig>): ComponentConfi
             SHARED_CONSTANTS.VALIDATION.MIN_CONFIG_VALUE,
             config.minSearchLength || DEFAULT_CONFIG.minSearchLength
         ),
-        debounceDelay: Math.max(
-            SHARED_CONSTANTS.VALIDATION.MIN_DEBOUNCE_DELAY,
-            config.debounceDelay || DEFAULT_CONFIG.debounceDelay
+        debounceDelay: Math.min(
+            SHARED_CONSTANTS.TIMEOUTS.DEBOUNCE_MAX * 10,
+            Math.max(
+                SHARED_CONSTANTS.VALIDATION.MIN_DEBOUNCE_DELAY,
+                config.debounceDelay || DEFAULT_CONFIG.debounceDelay
+            )
         ),
-        maxResults: Math.max(
-            SHARED_CONSTANTS.VALIDATION.MIN_CONFIG_VALUE,
-            config.maxResults || DEFAULT_CONFIG.maxResults
+        maxResults: Math.min(
+            SHARED_CONSTANTS.VALIDATION.MAX_RESULTS,
+            Math.max(
+                SHARED_CONSTANTS.VALIDATION.MIN_CONFIG_VALUE,
+                config.maxResults || DEFAULT_CONFIG.maxResults
+            )
         ),
         enableFilters: config.enableFilters ?? DEFAULT_CONFIG.enableFilters,
         highlightMatches: config.highlightMatches ?? DEFAULT_CONFIG.highlightMatches,
-        dataEndpoint: config.dataEndpoint || DEFAULT_CONFIG.dataEndpoint
+        dataEndpoint: config.dataEndpoint && isSafeEndpoint(config.dataEndpoint)
+            ? config.dataEndpoint
+            : DEFAULT_CONFIG.dataEndpoint
     };
 }
 
@@ -61,15 +69,29 @@ export function escapeHtml(text: string): string {
     return div.innerHTML;
 }
 
-// Highlights matching text in search results
+// Highlights matching text in search results.
+// Matches against the raw text and escapes each segment separately so a query
+// such as "amp" can never match inside an HTML entity produced by escaping.
 export function highlightText(text: string, query: string): string {
-    if (!query.trim()) return escapeHtml(text);
+    const trimmed = query.trim();
+    if (!trimmed) return escapeHtml(text);
 
-    const escapedText = escapeHtml(text);
-    const escapedQuery = escapeHtml(query);
-    const regex = new RegExp(`(${escapedQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    const regex = new RegExp(`(${trimmed.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
 
-    return escapedText.replace(regex, '<mark>$1</mark>');
+    return text
+        .split(regex)
+        .map((part, index) => index % 2 === 1 ? `<mark>${escapeHtml(part)}</mark>` : escapeHtml(part))
+        .join('');
+}
+
+// Returns true only for http(s) URLs (relative URLs are resolved against the page)
+export function isSafeEndpoint(url: string): boolean {
+    try {
+        const parsed = new URL(url, document.baseURI);
+        return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+    } catch {
+        return false;
+    }
 }
 
 // Formats currency values
