@@ -14,7 +14,7 @@ function getCombinedData() {
             transactions
         };
     } catch (error) {
-        console.error('Error reading data files:', error);
+        console.error('Error reading data files:', error.message);
         return {
             accounts: [],
             customers: [],
@@ -26,24 +26,39 @@ function getCombinedData() {
 // Simple HTTP server to serve the data
 const http = require('http');
 
+const HOST = process.env.HOST || '127.0.0.1';
+const PORT = Number(process.env.PORT) || 3001;
+// Only these origins may read the data cross-origin (comma-separated override via env)
+const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || 'http://localhost:8080,http://127.0.0.1:8080').split(',');
+
 const server = http.createServer((req, res) => {
-    // Enable CORS
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    const origin = req.headers.origin;
+    if (origin && ALLOWED_ORIGINS.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+        res.setHeader('Vary', 'Origin');
+    }
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    
-    if (req.url === '/api/search-data' && req.method === 'GET') {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Cache-Control', 'no-store');
+
+    if (req.method === 'OPTIONS') {
+        res.statusCode = 204;
+        res.end();
+        return;
+    }
+
+    const pathname = req.url.split('?')[0];
+    if (pathname === '/api/search-data' && req.method === 'GET') {
         res.setHeader('Content-Type', 'application/json');
-        const data = getCombinedData();
-        res.end(JSON.stringify(data));
+        res.end(JSON.stringify(getCombinedData()));
     } else {
         res.statusCode = 404;
         res.end('Not Found');
     }
 });
 
-const PORT = 3001;
-server.listen(PORT, () => {
-    console.log(`Data API server running on http://localhost:${PORT}`);
-    console.log(`Data endpoint: http://localhost:${PORT}/api/search-data`);
+server.listen(PORT, HOST, () => {
+    console.log(`Data API server running on http://${HOST}:${PORT}`);
+    console.log(`Data endpoint: http://${HOST}:${PORT}/api/search-data`);
 });

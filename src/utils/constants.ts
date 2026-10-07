@@ -6,7 +6,8 @@ export type SharedConstants = typeof SHARED_CONSTANTS;
 // All values are frozen to prevent accidental modification
 export const SHARED_CONSTANTS = {
     CDN_URLS: {
-        FONT_AWESOME: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css'
+        FONT_AWESOME: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css',
+        FONT_AWESOME_SRI: 'sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=='
     },
 
     // Timeout configurations in milliseconds
